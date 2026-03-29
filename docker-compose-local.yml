@@ -62,7 +62,10 @@ services:
 
   # ==================== App (Next.js + Workers) ====================
   app:
-    image: ghcr.io/saturndec/waoowaoo:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: waoowaoo:local
     container_name: waoowaoo-app
     restart: unless-stopped
     environment:
@@ -102,8 +105,8 @@ services:
       BULL_BOARD_HOST: "0.0.0.0"
       BULL_BOARD_PORT: "3010"
       BULL_BOARD_BASE_PATH: "/admin/queues"
-      BULL_BOARD_USER: "admin"
-      BULL_BOARD_PASSWORD: "admin"
+      BULL_BOARD_USER: ""
+      BULL_BOARD_PASSWORD: ""
       # 日志
       LOG_UNIFIED_ENABLED: "true"
       LOG_LEVEL: "INFO"

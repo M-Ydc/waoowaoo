@@ -34,9 +34,11 @@ export function usePromptStageActions({
   assetLibraryCharacters,
   assetLibraryLocations,
   onAppendContent,
+  promptVisibility,
 }: PromptsStageShellProps) {
   const t = useTranslations('storyboard')
   const aiModifyShotPrompt = useAiModifyProjectShotPrompt(projectId)
+
 
   const isShotTaskRunning = useCallback((shot: NovelPromotionShot) => {
     return Boolean((shot as NovelPromotionShot & { imageTaskRunning?: boolean }).imageTaskRunning)
@@ -133,6 +135,7 @@ export function usePromptStageActions({
 
     setAppendContent: appendFlow.setAppendContent,
     handleAppendSubmit: appendFlow.handleAppendSubmit,
+    promptVisibility,
   }
 }
 

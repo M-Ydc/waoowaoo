@@ -37,6 +37,14 @@ export interface EpisodeVideoUrlsResponse {
 export interface VideoStageShellProps {
   projectId: string
   episodeId: string
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
   storyboards: Storyboard[]
   clips: Clip[]
   defaultVideoModel: string

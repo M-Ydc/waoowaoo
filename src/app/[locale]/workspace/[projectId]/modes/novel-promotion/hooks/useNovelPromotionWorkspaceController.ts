@@ -170,6 +170,7 @@ export function useNovelPromotionWorkspaceController({
     handleGenerateAllVideos: videoActions.handleGenerateAllVideos,
     handleUpdateVideoPrompt: videoActions.handleUpdateVideoPrompt,
     handleUpdatePanelVideoModel: videoActions.handleUpdatePanelVideoModel,
+    promptVisibility: projectSnapshot.promptVisibility,
   })
 
   const uiState = {

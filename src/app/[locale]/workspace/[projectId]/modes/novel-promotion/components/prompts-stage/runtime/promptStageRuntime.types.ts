@@ -17,6 +17,14 @@ export interface PromptsStageShellProps {
   assetLibraryCharacters: AssetLibraryCharacter[]
   assetLibraryLocations: AssetLibraryLocation[]
   onAppendContent?: (content: string) => Promise<void>
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 export type LocationAssetWithImages = AssetLibraryLocation & {

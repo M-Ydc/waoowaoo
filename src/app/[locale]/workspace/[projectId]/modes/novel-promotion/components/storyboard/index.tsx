@@ -20,6 +20,14 @@ interface StoryboardStageProps {
   onBack: () => void
   onNext: () => void
   isTransitioning?: boolean
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 export default function StoryboardStage({
@@ -31,6 +39,7 @@ export default function StoryboardStage({
   onBack,
   onNext,
   isTransitioning = false,
+  promptVisibility,
 }: StoryboardStageProps) {
   const controller = useStoryboardStageController({
     projectId,
@@ -162,6 +171,7 @@ export default function StoryboardStage({
           onGenerateAllPanels={handleGenerateAllPanels}
           onAddStoryboardGroupAtStart={() => addStoryboardGroup(0)}
           onBack={onBack}
+          promptVisibility={promptVisibility}
         />
 
         <StoryboardCanvas

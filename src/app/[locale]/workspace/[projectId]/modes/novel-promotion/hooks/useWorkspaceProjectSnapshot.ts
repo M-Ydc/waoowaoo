@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import type { NovelPromotionWorkspaceProps } from '../types'
 import type { CapabilitySelections } from '@/lib/model-config-contract'
+import { buildProjectPromptVisibility } from '@/lib/prompt-i18n/prompt-visibility'
 
 function parseCapabilitySelections(raw: unknown): CapabilitySelections {
   if (!raw) return {}
@@ -27,6 +28,14 @@ export function useWorkspaceProjectSnapshot({
   return useMemo(() => {
     const projectData = project.novelPromotionData
     const capabilityOverrides = parseCapabilitySelections(projectData?.capabilityOverrides)
+    const promptVisibility = buildProjectPromptVisibility({
+      globalAssetText: projectData?.globalAssetText,
+      projectPrompt: projectData?.projectPrompt,
+      artStyle: projectData?.artStyle,
+      artStylePrompt: projectData?.artStylePrompt,
+      imagePromptSupplement: projectData?.imagePromptSupplement,
+      videoPromptSupplement: projectData?.videoPromptSupplement,
+    })
     return {
       projectData,
       projectCharacters: projectData?.characters || [],
@@ -34,6 +43,7 @@ export function useWorkspaceProjectSnapshot({
       episodeStoryboards: episode?.storyboards || [],
       currentStage: urlStage === 'editor' ? 'videos' : (urlStage || 'config'),
       globalAssetText: projectData?.globalAssetText || '',
+      projectPrompt: projectData?.projectPrompt || '',
       novelText: episode?.novelText || '',
       analysisModel: projectData?.analysisModel,
       characterModel: projectData?.characterModel,
@@ -46,6 +56,10 @@ export function useWorkspaceProjectSnapshot({
       capabilityOverrides,
       ttsRate: projectData?.ttsRate,
       artStyle: projectData?.artStyle,
+      imagePromptSupplement: projectData?.imagePromptSupplement || '',
+      videoPromptSupplement: projectData?.videoPromptSupplement || '',
+      artStylePrompt: projectData?.artStylePrompt || '',
+      promptVisibility,
     }
   }, [episode?.novelText, episode?.storyboards, project.novelPromotionData, urlStage])
 }

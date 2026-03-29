@@ -11,14 +11,13 @@ export default function PromptsStageLayout(props: PromptsStageShellProps) {
   const runtime = usePromptStageActions(props)
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {runtime.previewImage && (
         <ImagePreviewModal
           imageUrl={runtime.previewImage}
           onClose={() => runtime.setPreviewImage(null)}
         />
       )}
-
       <PromptListPanel runtime={runtime} />
       <PromptEditorPanel runtime={runtime} />
     </div>

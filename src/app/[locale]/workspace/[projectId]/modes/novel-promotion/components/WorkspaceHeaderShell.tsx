@@ -50,6 +50,10 @@ interface WorkspaceHeaderShellProps {
   capabilityOverrides: CapabilitySelections
   videoRatio: string | null | undefined
   ttsRate: string | null | undefined
+  projectPrompt?: string | null
+  imagePrompt?: string | null
+  videoPrompt?: string | null
+  stylePrompt?: string | null
   onUpdateConfig: (key: string, value: unknown) => Promise<void>
   globalAssetText: string
   projectName: string
@@ -97,6 +101,10 @@ export default function WorkspaceHeaderShell({
   capabilityOverrides,
   videoRatio,
   ttsRate,
+  projectPrompt,
+  imagePrompt,
+  videoPrompt,
+  stylePrompt,
   onUpdateConfig,
   globalAssetText,
   projectName,
@@ -154,6 +162,14 @@ export default function WorkspaceHeaderShell({
         onClose={onCloseWorldContextModal}
         text={globalAssetText}
         onChange={(value) => { onUpdateConfig('globalAssetText', value) }}
+        projectPrompt={projectPrompt ?? undefined}
+        imagePrompt={imagePrompt ?? undefined}
+        videoPrompt={videoPrompt ?? undefined}
+        stylePrompt={stylePrompt ?? undefined}
+        onProjectPromptChange={(value) => { onUpdateConfig('projectPrompt', value) }}
+        onImagePromptChange={(value) => { onUpdateConfig('imagePrompt', value) }}
+        onVideoPromptChange={(value) => { onUpdateConfig('videoPrompt', value) }}
+        onStylePromptChange={(value) => { onUpdateConfig('stylePrompt', value) }}
       />
       {episodes.length > 0 && currentEpisodeId && (() => {
         const getNum = (name: string) => { const m = name.match(/\d+/); return m ? parseInt(m[0], 10) : Infinity }
@@ -181,8 +197,6 @@ export default function WorkspaceHeaderShell({
           />
         )
       })()}
-
-
 
       <CapsuleNav
         items={capsuleNavItems}

@@ -6,6 +6,7 @@ import StoryboardHeader from './StoryboardHeader'
 import TaskStatusInline from '@/components/task/TaskStatusInline'
 import { AppIcon } from '@/components/ui/icons'
 import { GlassButton } from '@/components/ui/primitives'
+import { PromptContextSummary } from '../prompts/PromptContextSummary'
 
 interface StoryboardToolbarProps {
   totalSegments: number
@@ -20,6 +21,14 @@ interface StoryboardToolbarProps {
   onGenerateAllPanels: () => Promise<void>
   onAddStoryboardGroupAtStart: () => void
   onBack: () => void
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 export default function StoryboardToolbar({
@@ -35,10 +44,26 @@ export default function StoryboardToolbar({
   onGenerateAllPanels,
   onAddStoryboardGroupAtStart,
   onBack,
+  promptVisibility,
 }: StoryboardToolbarProps) {
   const t = useTranslations('storyboard')
   return (
     <>
+      <div className="px-6 mb-2">
+        {promptVisibility && (
+          <PromptContextSummary
+            data={{
+              globalAssetText: promptVisibility.globalAssetText,
+              projectPrompt: promptVisibility.projectPrompt,
+              artStyleLabel: promptVisibility.artStyleLabel,
+              artStylePrompt: promptVisibility.artStylePrompt,
+              imagePromptSupplement: promptVisibility.imagePromptSupplement,
+            }}
+            className="w-full"
+          />
+        )}
+      </div>
+
       <StoryboardHeader
         totalSegments={totalSegments}
         totalPanels={totalPanels}

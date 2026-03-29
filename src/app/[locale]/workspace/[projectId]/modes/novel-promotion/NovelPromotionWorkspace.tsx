@@ -96,8 +96,19 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
         capabilityOverrides={vm.project.capabilityOverrides}
         videoRatio={vm.project.videoRatio}
         ttsRate={vm.project.ttsRate !== undefined && vm.project.ttsRate !== null ? String(vm.project.ttsRate) : undefined}
-        onUpdateConfig={vm.actions.handleUpdateConfig}
+        onUpdateConfig={(key, value) => {
+          const map: Record<string, string> = {
+            imagePrompt: 'imagePromptSupplement',
+            videoPrompt: 'videoPromptSupplement',
+            stylePrompt: 'artStylePrompt',
+          }
+          return vm.actions.handleUpdateConfig(map[key] || key, value)
+        }}
         globalAssetText={vm.project.globalAssetText}
+        projectPrompt={vm.project.projectPrompt}
+        imagePrompt={vm.project.imagePromptSupplement}
+        videoPrompt={vm.project.videoPromptSupplement}
+        stylePrompt={vm.project.artStylePrompt}
         projectName={project.name}
         episodes={episodes}
         currentEpisodeId={episodeId}

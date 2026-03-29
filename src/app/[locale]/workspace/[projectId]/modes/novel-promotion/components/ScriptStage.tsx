@@ -21,6 +21,7 @@ export default function ScriptStage() {
       onOpenAssetLibrary={runtime.onOpenAssetLibrary}
       onGenerateStoryboard={runtime.onRunScriptToStoryboard}
       isSubmittingStoryboardBuild={runtime.isConfirmingAssets || runtime.isStartingScriptToStoryboard}
+      promptVisibility={runtime.promptVisibility}
     />
   )
 }

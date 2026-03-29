@@ -56,6 +56,14 @@ export interface WorkspaceStageRuntimeValue {
   ) => Promise<void>
   onUpdatePanelVideoModel: (storyboardId: string, panelIndex: number, model: string) => Promise<void>
   onOpenAssetLibraryForCharacter: (characterId?: string | null, refreshAssets?: boolean) => void
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 const WorkspaceStageRuntimeContext = createContext<WorkspaceStageRuntimeValue | null>(null)
@@ -79,4 +87,8 @@ export function useWorkspaceStageRuntime() {
     throw new Error('useWorkspaceStageRuntime must be used within WorkspaceStageRuntimeProvider')
   }
   return context
+}
+
+export function useWorkspaceStageRuntimeOptional() {
+  return useContext(WorkspaceStageRuntimeContext)
 }

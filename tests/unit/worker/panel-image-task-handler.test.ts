@@ -3,6 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TASK_TYPE, type TaskJobData } from '@/lib/task/types'
 
 const prismaMock = vi.hoisted(() => ({
+  novelPromotionProject: {
+    findUnique: vi.fn(),
+  },
   novelPromotionPanel: {
     findUnique: vi.fn(),
     update: vi.fn(async () => ({})),
@@ -58,6 +61,9 @@ vi.mock('@/lib/prompt-i18n', () => ({
   PROMPT_IDS: { NP_SINGLE_PANEL_IMAGE: 'np_single_panel_image' },
   buildPrompt: vi.fn(() => 'panel-image-prompt'),
 }))
+vi.mock('@/lib/prompt-i18n/runtime-overrides', () => ({
+  buildPromptWithOverrides: vi.fn(async () => 'panel-image-prompt'),
+}))
 
 import { handlePanelImageTask } from '@/lib/workers/handlers/panel-image-task-handler'
 
@@ -80,6 +86,14 @@ function buildJob(payload: Record<string, unknown>, targetId = 'panel-1'): Job<T
 describe('worker panel-image-task-handler behavior', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+
+    prismaMock.novelPromotionProject.findUnique.mockResolvedValue({
+      globalAssetText: '',
+      projectPrompt: '',
+      artStylePrompt: '',
+      imagePromptSupplement: '',
+      videoPromptSupplement: '',
+    })
 
     prismaMock.novelPromotionPanel.findUnique.mockResolvedValue({
       id: 'panel-1',

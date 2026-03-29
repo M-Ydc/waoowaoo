@@ -10,7 +10,7 @@ export type AssistantChatId = 'api-config-template' | 'tutorial'
 export interface AssistantDraftModel {
   modelId: string
   name: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'audio'
   provider: string
   compatMediaTemplate: OpenAICompatMediaTemplate
 }
@@ -52,7 +52,7 @@ function parseDraftModel(value: unknown): AssistantDraftModel | undefined {
   const provider = readTrimmedString(value.provider)
   const type = value.type
   const template = value.compatMediaTemplate
-  if ((type !== 'image' && type !== 'video') || !modelId || !name || !provider) return undefined
+  if ((type !== 'image' && type !== 'video' && type !== 'audio') || !modelId || !name || !provider) return undefined
   if (!isRecord(template)) return undefined
   return {
     modelId,

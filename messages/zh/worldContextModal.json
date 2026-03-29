@@ -2,5 +2,15 @@
     "title": "世界观与人设",
     "description": "定义全局通用的角色外貌、场景风格和环境描述",
     "placeholder": "例如：\n【男主】张三，25岁，黑色短发，总是穿着一件洗得发白的牛仔夹克，眼神忧郁。\n【女主】李四，22岁，红发双马尾，性格活泼,喜欢穿洛丽塔风格的裙子。\n【场景】2077年的赛博朋克城市，霓虹灯闪烁，终年下雨...",
-    "hint": "这些设定将被所有剧集继承，作为AI绘画的基础参考。"
+    "hint": "这些设定将被所有剧集继承，作为AI绘画的基础参考。",
+    "promptSettingsTitle": "提示词上下文覆盖",
+    "globalAssetTextTitle": "全局世界观上下文",
+    "projectPromptTitle": "项目提示词",
+    "imagePromptTitle": "全局图片上下文",
+    "videoPromptTitle": "全局视频上下文",
+    "stylePromptTitle": "全局风格上下文",
+    "projectPromptPlaceholder": "例如：整体情绪节奏保持克制，保留黑色电影式旁白感，优先保证角色连续性...",
+    "imagePromptPlaceholder": "例如：高细节，电影级光效，8k，写实...",
+    "videoPromptPlaceholder": "例如：流畅的相机移动，慢动作，动态聚焦...",
+    "stylePromptPlaceholder": "例如：印象派油画，鲜艳的颜色，富有表现力的笔触..."
 }

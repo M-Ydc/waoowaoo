@@ -21,6 +21,7 @@ import ImagePreviewModal from '@/components/ui/ImagePreviewModal'
 import { ModelCapabilityDropdown } from '@/components/ui/config-modals/ModelCapabilityDropdown'
 import VideoTimelinePanel from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/video-stage/VideoTimelinePanel'
 import VideoRenderPanel from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/video-stage/VideoRenderPanel'
+import { PromptContextSummary } from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/prompts/PromptContextSummary'
 import type { VideoStageShellProps } from './video-stage-runtime/types'
 import {
   type EffectiveVideoCapabilityDefinition,
@@ -66,6 +67,7 @@ function toFieldLabel(field: string): string {
 export function useVideoStageRuntime({
   projectId,
   episodeId,
+  promptVisibility,
   storyboards,
   clips,
   defaultVideoModel,
@@ -111,6 +113,7 @@ export function useVideoStageRuntime({
   const { allPanels } = useVideoPanelsProjection({
     storyboards,
     clips,
+    promptVisibility,
     panelVideoStates,
     panelLipStates,
   })
@@ -509,6 +512,23 @@ export function useVideoStageRuntime({
 
   return (
     <div className="space-y-6 pb-20">
+      <div className="px-6">
+        {promptVisibility && (
+          <PromptContextSummary
+            data={{
+              globalAssetText: promptVisibility.globalAssetText,
+              projectPrompt: promptVisibility.projectPrompt,
+              artStyleLabel: promptVisibility.artStyleLabel,
+              artStylePrompt: promptVisibility.artStylePrompt,
+              imagePromptSupplement: promptVisibility.imagePromptSupplement,
+              videoPromptSupplement: promptVisibility.videoPromptSupplement,
+            }}
+            showVideo
+            className="w-full"
+          />
+        )}
+      </div>
+
       <VideoToolbar
         totalPanels={projectedPanels.length}
         runningCount={runningCount}

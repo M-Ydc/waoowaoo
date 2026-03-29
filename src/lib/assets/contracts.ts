@@ -49,6 +49,10 @@ export type AssetVariantSummary = {
   index: number
   label: string
   description: string | null
+  promptText?: string | null
+  promptDisplayText?: string | null
+  promptSystemSuffix?: string | null
+  artStyle?: string | null
   selectionState: {
     selectedRenderIndex: number | null
   }
@@ -74,6 +78,12 @@ export type CharacterAssetSummary = BaseAssetSummary & {
   family: 'visual'
   variants: AssetVariantSummary[]
   introduction: string | null
+  promptVisibility?: {
+    projectPrompt?: string | null
+    globalAssetText?: string | null
+    artStyle?: string | null
+    artStylePrompt?: string | null
+  }
   profileData: string | null
   profileConfirmed: boolean | null
   profileTaskRefs: AssetTaskRef[]
@@ -91,6 +101,12 @@ export type LocationAssetSummary = BaseAssetSummary & {
   family: 'visual'
   variants: AssetVariantSummary[]
   summary: string | null
+  promptVisibility?: {
+    projectPrompt?: string | null
+    globalAssetText?: string | null
+    artStyle?: string | null
+    artStylePrompt?: string | null
+  }
   selectedVariantId: string | null
 }
 
@@ -99,6 +115,12 @@ export type PropAssetSummary = BaseAssetSummary & {
   family: 'visual'
   variants: AssetVariantSummary[]
   summary: string | null
+  promptVisibility?: {
+    projectPrompt?: string | null
+    globalAssetText?: string | null
+    artStyle?: string | null
+    artStylePrompt?: string | null
+  }
   selectedVariantId: string | null
 }
 

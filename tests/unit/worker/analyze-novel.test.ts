@@ -56,6 +56,9 @@ vi.mock('@/lib/prompt-i18n', () => ({
   },
   buildPrompt: vi.fn(() => 'analysis-prompt'),
 }))
+vi.mock('@/lib/prompt-i18n/runtime-overrides', () => ({
+  buildPromptWithOverrides: vi.fn(async ({ promptId }: { promptId: string }) => `${promptId}-prompt`),
+}))
 
 import { handleAnalyzeNovelTask } from '@/lib/workers/handlers/analyze-novel'
 

@@ -152,6 +152,10 @@ vi.mock('@/lib/prompt-i18n', () => ({
   getPromptTemplate: vi.fn(() => 'prompt-template'),
   buildPrompt: vi.fn(() => 'voice-analysis-prompt'),
 }))
+vi.mock('@/lib/prompt-i18n/runtime-overrides', () => ({
+  getResolvedPromptTemplate: vi.fn(async ({ promptId }: { promptId: string }) => `template-${promptId}`),
+  appendProjectPromptContextForProject: vi.fn(async ({ basePrompt }: { basePrompt: string }) => basePrompt),
+}))
 
 vi.mock('@/lib/workers/handlers/script-to-storyboard-helpers', () => ({
   asJsonRecord: (value: unknown) => {

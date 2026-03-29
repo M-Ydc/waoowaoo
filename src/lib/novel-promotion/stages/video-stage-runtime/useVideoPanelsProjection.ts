@@ -19,6 +19,14 @@ interface TaskPresentationLike {
 interface UseVideoPanelsProjectionParams {
   storyboards: Storyboard[]
   clips: Clip[]
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
   panelVideoStates: TaskPresentationLike
   panelLipStates: TaskPresentationLike
 }
@@ -26,6 +34,7 @@ interface UseVideoPanelsProjectionParams {
 export function useVideoPanelsProjection({
   storyboards,
   clips,
+  promptVisibility,
   panelVideoStates,
   panelLipStates,
 }: UseVideoPanelsProjectionParams) {
@@ -61,6 +70,16 @@ export function useVideoPanelsProjection({
           panelId,
           storyboardId: storyboard.id,
           panelIndex: actualPanelIndex,
+          promptVisibility: promptVisibility
+            ? {
+              globalAssetText: promptVisibility.globalAssetText,
+              projectPrompt: promptVisibility.projectPrompt,
+              artStyleLabel: promptVisibility.artStyleLabel,
+              artStylePrompt: promptVisibility.artStylePrompt,
+              imagePromptSupplement: promptVisibility.imagePromptSupplement,
+              videoPromptSupplement: promptVisibility.videoPromptSupplement,
+            }
+            : undefined,
           textPanel: {
             panel_number: panel.panelNumber || actualPanelIndex + 1,
             shot_type: panel.shotType || '',
@@ -103,7 +122,7 @@ export function useVideoPanelsProjection({
       })
     })
     return panels
-  }, [panelLipStates, panelVideoStates, sortedStoryboards])
+  }, [panelLipStates, panelVideoStates, promptVisibility, sortedStoryboards])
 
   return {
     sortedStoryboards,

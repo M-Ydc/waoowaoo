@@ -5,6 +5,7 @@ import type {
   PhotographyCharacter,
   PhotographyRules,
 } from './AIDataModal.types'
+import { PromptContextSummary } from '../prompts/PromptContextSummary'
 
 interface AIDataModalFormPaneProps {
   t: (key: string) => string
@@ -23,6 +24,14 @@ interface AIDataModalFormPaneProps {
   onPhotographyFieldChange: (path: string, value: string) => void
   onPhotographyCharacterChange: (index: number, field: keyof PhotographyCharacter, value: string) => void
   onActingCharacterChange: (index: number, field: keyof ActingCharacter, value: string) => void
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 export default function AIDataModalFormPane({
@@ -42,9 +51,25 @@ export default function AIDataModalFormPane({
   onPhotographyFieldChange,
   onPhotographyCharacterChange,
   onActingCharacterChange,
+  promptVisibility,
 }: AIDataModalFormPaneProps) {
   return (
     <div className="w-1/2 border-r border-[var(--glass-stroke-base)] overflow-y-auto p-6 space-y-5">
+      {promptVisibility && (
+        <PromptContextSummary
+          data={{
+            globalAssetText: promptVisibility.globalAssetText,
+            projectPrompt: promptVisibility.projectPrompt,
+            artStyleLabel: promptVisibility.artStyleLabel,
+            artStylePrompt: promptVisibility.artStylePrompt,
+            imagePromptSupplement: promptVisibility.imagePromptSupplement,
+            videoPromptSupplement: promptVisibility.videoPromptSupplement,
+          }}
+          showVideo
+          className="mb-6"
+        />
+      )}
+
       <div className="text-sm font-medium text-[var(--glass-text-secondary)] mb-3">{t('aiData.basicData')}</div>
 
       <div className="grid grid-cols-2 gap-4">

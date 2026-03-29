@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl'
 import { VideoPanel } from './types'
 import { AppIcon } from '@/components/ui/icons'
+import { PromptContextSummary } from '../prompts/PromptContextSummary'
+import { useWorkspaceStageRuntime } from '../../WorkspaceStageRuntimeContext'
 
 interface VideoPromptModalProps {
   panel: VideoPanel | undefined
@@ -22,12 +24,14 @@ export default function VideoPromptModal({
   onCancel
 }: VideoPromptModalProps) {
   const t = useTranslations('video')
+  const runtime = useWorkspaceStageRuntime()
+  const promptVisibility = runtime.promptVisibility
+
   if (!panel) return null
 
   return (
     <div className="fixed inset-0 bg-[var(--glass-overlay)] flex items-center justify-center z-50" onClick={onCancel}>
       <div className="bg-[var(--glass-bg-surface)] rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        {/* 标题栏 */}
         <div className="sticky top-0 bg-[var(--glass-bg-surface)] border-b px-6 py-4 flex items-center justify-between">
           <h3 className="text-lg font-bold">{t('promptModal.title', { number: panelIndex + 1 })}</h3>
           <button onClick={onCancel} className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">
@@ -36,7 +40,21 @@ export default function VideoPromptModal({
         </div>
 
         <div className="p-6 space-y-4">
-          {/* 镜头信息 */}
+          {promptVisibility && (
+            <PromptContextSummary
+              data={{
+                globalAssetText: promptVisibility.globalAssetText,
+                projectPrompt: promptVisibility.projectPrompt,
+                artStyleLabel: promptVisibility.artStyleLabel,
+                artStylePrompt: promptVisibility.artStylePrompt,
+                imagePromptSupplement: promptVisibility.imagePromptSupplement,
+                videoPromptSupplement: promptVisibility.videoPromptSupplement,
+              }}
+              showVideo
+              className="mb-4"
+            />
+          )}
+
           <div className="p-3 bg-[var(--glass-bg-muted)] rounded-lg text-sm space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-[var(--glass-text-tertiary)]">{t('promptModal.shotType')}</span>
@@ -63,7 +81,6 @@ export default function VideoPromptModal({
             )}
           </div>
 
-          {/* 视频提示词编辑 */}
           <div>
             <label className="block text-sm font-medium text-[var(--glass-text-secondary)] mb-2">
               {t('promptModal.promptLabel')}
@@ -80,7 +97,6 @@ export default function VideoPromptModal({
             </p>
           </div>
 
-          {/* 按钮 */}
           <div className="flex justify-end gap-3 pt-4 border-t">
             <button
               onClick={onCancel}

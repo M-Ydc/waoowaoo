@@ -82,6 +82,16 @@ export interface VideoPanel {
   panelId?: string  // 任务目标ID
   storyboardId: string
   panelIndex: number
+  promptVisibility?: {
+    globalAssetText?: string
+    projectPrompt?: string
+    artStyle?: string
+    artStyleLabel?: string
+    defaultArtStylePromptZh?: string
+    artStylePrompt?: string
+    imagePromptSupplement?: string
+    videoPromptSupplement?: string
+  }
   textPanel?: TextPanel
   firstLastFramePrompt?: string
   imageUrl?: string

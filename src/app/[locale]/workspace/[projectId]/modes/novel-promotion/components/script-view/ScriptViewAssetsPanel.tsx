@@ -7,6 +7,7 @@ import TaskStatusInline from '@/components/task/TaskStatusInline'
 import { MediaImageWithLoading } from '@/components/media/MediaImageWithLoading'
 import { SpotlightCharCard, SpotlightLocationCard, getSelectedLocationImage } from './SpotlightCards'
 import type { TaskPresentationState } from '@/lib/task/presentation'
+import { PromptContextSummary } from '../prompts/PromptContextSummary'
 import { AppIcon } from '@/components/ui/icons'
 
 interface Clip {
@@ -48,6 +49,14 @@ interface ScriptViewAssetsPanelProps {
   tAssets: (key: string, values?: Record<string, unknown>) => string
   tNP: (key: string, values?: Record<string, unknown>) => string
   tCommon: (key: string, values?: Record<string, unknown>) => string
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 function setsEqual<T>(left: Set<T>, right: Set<T>): boolean {
@@ -145,6 +154,7 @@ export default function ScriptViewAssetsPanel({
   tAssets,
   tNP,
   tCommon,
+  promptVisibility,
 }: ScriptViewAssetsPanelProps) {
   const [showAddChar, setShowAddChar] = useState(false)
   const [showAddLoc, setShowAddLoc] = useState(false)
@@ -463,6 +473,19 @@ export default function ScriptViewAssetsPanel({
 
       <div className="relative z-10 flex-1 min-h-0 glass-surface-modal overflow-hidden p-4 pr-3">
         <div className="flex h-full flex-col gap-6 overflow-y-auto pr-1 custom-scrollbar">
+          {promptVisibility && (
+            <PromptContextSummary
+              data={{
+                globalAssetText: promptVisibility.globalAssetText,
+                projectPrompt: promptVisibility.projectPrompt,
+                artStyleLabel: promptVisibility.artStyleLabel,
+                artStylePrompt: promptVisibility.artStylePrompt,
+                imagePromptSupplement: promptVisibility.imagePromptSupplement,
+              }}
+              className="mb-2"
+            />
+          )}
+
           {assetsLoading && characters.length === 0 && locations.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-[var(--glass-text-tertiary)] animate-pulse">
               <TaskStatusInline state={assetsLoadingState} />

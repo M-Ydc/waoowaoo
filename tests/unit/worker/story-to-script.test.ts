@@ -75,6 +75,10 @@ vi.mock('@/lib/prompt-i18n', () => ({
   },
   getPromptTemplate: vi.fn(() => 'prompt-template'),
 }))
+vi.mock('@/lib/prompt-i18n/runtime-overrides', () => ({
+  getResolvedPromptTemplate: vi.fn(async ({ promptId }: { promptId: string }) => `template-${promptId}`),
+  appendProjectPromptContextForProject: vi.fn(async ({ basePrompt }: { basePrompt: string }) => basePrompt),
+}))
 vi.mock('@/lib/workers/handlers/story-to-script-helpers', () => ({
   asString: (value: unknown) => (typeof value === 'string' ? value : ''),
   parseEffort: vi.fn(() => null),

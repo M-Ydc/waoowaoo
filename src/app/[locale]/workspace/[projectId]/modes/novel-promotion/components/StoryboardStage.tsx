@@ -22,6 +22,7 @@ export default function StoryboardStage() {
       onBack={() => runtime.onStageChange('script')}
       onNext={async () => runtime.onStageChange('videos')}
       isTransitioning={runtime.isTransitioning}
+      promptVisibility={runtime.promptVisibility}
     />
   )
 }

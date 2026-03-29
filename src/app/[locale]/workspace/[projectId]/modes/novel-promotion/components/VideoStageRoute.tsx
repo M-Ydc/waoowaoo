@@ -23,6 +23,7 @@ export default function VideoStageRoute() {
     <VideoStage
       projectId={projectId}
       episodeId={episodeId}
+      promptVisibility={runtime.promptVisibility}
       storyboards={storyboards}
       clips={normalizedClips}
       defaultVideoModel={runtime.videoModel || ''}

@@ -11,6 +11,12 @@ import {
 } from '@/lib/assets/contracts'
 import { getAssetKindRegistration } from '@/lib/assets/kinds/registry'
 import type { MediaRef } from '@/types/project'
+import {
+  CHARACTER_PROMPT_SUFFIX,
+  LOCATION_PROMPT_SUFFIX,
+  removeCharacterPromptSuffix,
+  removeLocationPromptSuffix,
+} from '@/lib/constants'
 
 type CharacterAppearanceRecord = {
   id: string
@@ -32,6 +38,10 @@ type ProjectCharacterRecord = {
   id: string
   name: string
   introduction?: string | null
+  artStyle?: string | null
+  artStylePrompt?: string | null
+  projectPrompt?: string | null
+  globalAssetText?: string | null
   profileData?: string | null
   voiceType?: 'custom' | 'qwen-designed' | 'uploaded' | null
   voiceId?: string | null
@@ -79,6 +89,10 @@ type ProjectLocationRecord = {
   id: string
   name: string
   summary: string | null
+  artStyle?: string | null
+  artStylePrompt?: string | null
+  projectPrompt?: string | null
+  globalAssetText?: string | null
   images: LocationImageRecord[]
 }
 
@@ -94,7 +108,25 @@ type ProjectPropRecord = {
   id: string
   name: string
   summary: string | null
+  artStyle?: string | null
+  artStylePrompt?: string | null
+  projectPrompt?: string | null
+  globalAssetText?: string | null
   images: LocationImageRecord[]
+}
+
+function buildProjectPromptVisibility(input: {
+  projectPrompt?: string | null
+  globalAssetText?: string | null
+  artStyle?: string | null
+  artStylePrompt?: string | null
+}) {
+  return {
+    projectPrompt: input.projectPrompt ?? null,
+    globalAssetText: input.globalAssetText ?? null,
+    artStyle: input.artStyle ?? null,
+    artStylePrompt: input.artStylePrompt ?? null,
+  }
 }
 
 type GlobalPropRecord = {
@@ -140,6 +172,10 @@ function createVariant(params: {
   index: number
   label: string
   description: string | null
+  promptText?: string | null
+  promptDisplayText?: string | null
+  promptSystemSuffix?: string | null
+  artStyle?: string | null
   selectedRenderIndex: number | null
   renders: AssetRenderSummary[]
   taskRefs: AssetTaskRef[]
@@ -149,6 +185,10 @@ function createVariant(params: {
     index: params.index,
     label: params.label,
     description: params.description,
+    promptText: params.promptText ?? null,
+    promptDisplayText: params.promptDisplayText ?? null,
+    promptSystemSuffix: params.promptSystemSuffix ?? null,
+    artStyle: params.artStyle ?? null,
     renders: params.renders,
     selectionState: {
       selectedRenderIndex: params.selectedRenderIndex,
@@ -185,6 +225,10 @@ export function mapProjectCharacterToAsset(character: ProjectCharacterRecord): C
       index: appearance.appearanceIndex,
       label: appearance.changeReason,
       description: appearance.description,
+      promptText: appearance.description,
+      promptDisplayText: removeCharacterPromptSuffix(appearance.description || ''),
+      promptSystemSuffix: CHARACTER_PROMPT_SUFFIX,
+      artStyle: character.artStyle ?? null,
       selectedRenderIndex: appearance.selectedIndex,
       renders,
       taskRefs: [
@@ -215,6 +259,7 @@ export function mapProjectCharacterToAsset(character: ProjectCharacterRecord): C
     taskState: createIdleTaskState(),
     variants,
     introduction: character.introduction ?? null,
+    promptVisibility: buildProjectPromptVisibility(character),
     profileData: character.profileData ?? null,
     profileConfirmed: character.profileConfirmed ?? null,
     profileTaskRefs: [
@@ -262,6 +307,10 @@ export function mapGlobalCharacterToAsset(character: GlobalCharacterRecord): Cha
       index: appearance.appearanceIndex,
       label: appearance.changeReason,
       description: appearance.description,
+      promptText: appearance.description,
+      promptDisplayText: removeCharacterPromptSuffix(appearance.description || ''),
+      promptSystemSuffix: CHARACTER_PROMPT_SUFFIX,
+      artStyle: null,
       selectedRenderIndex: appearance.selectedIndex,
       renders,
       taskRefs: [
@@ -324,6 +373,10 @@ function buildLocationVariants(
       index: image.imageIndex,
       label: `Image ${image.imageIndex + 1}`,
       description: image.description,
+      promptText: image.description,
+      promptDisplayText: removeLocationPromptSuffix(image.description || ''),
+      promptSystemSuffix: LOCATION_PROMPT_SUFFIX,
+      artStyle: null,
       selectedRenderIndex: image.isSelected ? 0 : null,
       renders: [
         createRender({
@@ -373,6 +426,7 @@ function mapLocationLikeProjectAsset(
     taskState: createIdleTaskState(),
     variants,
     summary: asset.summary,
+    promptVisibility: buildProjectPromptVisibility(asset),
     selectedVariantId: selectedVariant?.id ?? null,
   }
   return base

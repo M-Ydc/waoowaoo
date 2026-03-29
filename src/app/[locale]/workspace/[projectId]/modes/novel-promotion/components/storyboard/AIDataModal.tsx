@@ -6,6 +6,7 @@ import AIDataModalPreviewPane from './AIDataModalPreviewPane'
 import type { AIDataModalProps } from './AIDataModal.types'
 import { useAIDataModalState } from './hooks/useAIDataModalState'
 import { AppIcon } from '@/components/ui/icons'
+import { useWorkspaceStageRuntime } from '../../WorkspaceStageRuntimeContext'
 
 export type {
   AIDataModalProps,
@@ -32,6 +33,7 @@ export default function AIDataModal({
   onSave,
 }: AIDataModalProps) {
   const t = useTranslations('storyboard')
+  const runtime = useWorkspaceStageRuntime()
 
   const {
     shotType,
@@ -116,6 +118,7 @@ export default function AIDataModal({
             onPhotographyFieldChange={updatePhotographyField}
             onPhotographyCharacterChange={updatePhotographyCharacter}
             onActingCharacterChange={updateActingCharacter}
+            promptVisibility={runtime.promptVisibility}
           />
 
           <AIDataModalPreviewPane
@@ -127,16 +130,15 @@ export default function AIDataModal({
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)] hover:bg-[var(--glass-bg-muted)] rounded-lg transition-colors"
+            className="px-4 py-2 text-sm rounded-lg border border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)]"
           >
-            {t('candidate.cancel')}
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 text-sm text-white bg-[var(--glass-accent-from)] hover:bg-[var(--glass-accent-to)] rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 text-sm rounded-lg bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)]"
           >
-            <AppIcon name="check" className="w-4 h-4" />
-            {t('aiData.save')}
+            {t('common.save')}
           </button>
         </div>
       </div>

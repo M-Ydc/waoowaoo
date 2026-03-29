@@ -21,6 +21,10 @@ async function readProjectAssets(projectId: string): Promise<AssetSummary[]> {
     where: { projectId },
     select: {
       id: true,
+      projectPrompt: true,
+      globalAssetText: true,
+      artStyle: true,
+      artStylePrompt: true,
       characters: {
         include: {
           appearances: {
@@ -40,19 +44,27 @@ async function readProjectAssets(projectId: string): Promise<AssetSummary[]> {
     listProjectLocationBackedAssets(project.id, 'prop'),
   ])
 
+  const promptContext = {
+    projectPrompt: project.projectPrompt ?? null,
+    globalAssetText: project.globalAssetText ?? null,
+    artStyle: project.artStyle ?? null,
+    artStylePrompt: project.artStylePrompt ?? null,
+  }
+
   const withMedia = await attachMediaFieldsToProject({
     characters: project.characters,
     locations: [...locations, ...props],
   })
-  const projectCharacters = (withMedia.characters as unknown as Parameters<typeof mapProjectCharacterToAsset>[0][])
+  const projectCharacters = ((withMedia.characters as unknown as Parameters<typeof mapProjectCharacterToAsset>[0][]) || [])
+    .map((character) => ({ ...character, ...promptContext }))
     .map(mapProjectCharacterToAsset)
   const locationLikeAssets = withMedia.locations as Array<Record<string, unknown> & { assetKind?: string }>
   const projectLocations = locationLikeAssets
     .filter((asset) => asset.assetKind === 'location')
-    .map((asset) => mapProjectLocationToAsset(asset as Parameters<typeof mapProjectLocationToAsset>[0]))
+    .map((asset) => mapProjectLocationToAsset({ ...(asset as Parameters<typeof mapProjectLocationToAsset>[0]), ...promptContext }))
   const projectProps = locationLikeAssets
     .filter((asset) => asset.assetKind === 'prop')
-    .map((asset) => mapProjectPropToAsset(asset as Parameters<typeof mapProjectPropToAsset>[0]))
+    .map((asset) => mapProjectPropToAsset({ ...(asset as Parameters<typeof mapProjectPropToAsset>[0]), ...promptContext }))
   return [...projectCharacters, ...projectLocations, ...projectProps]
 }
 

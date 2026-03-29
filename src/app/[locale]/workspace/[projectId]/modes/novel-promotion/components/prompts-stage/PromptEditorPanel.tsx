@@ -1,6 +1,7 @@
 import TaskStatusInline from '@/components/task/TaskStatusInline'
 import { useTranslations } from 'next-intl'
 import type { PromptStageRuntime } from './hooks/usePromptStageActions'
+import { PromptContextSummary } from '../prompts/PromptContextSummary'
 
 interface PromptEditorPanelProps {
   runtime: PromptStageRuntime
@@ -18,10 +19,26 @@ export default function PromptEditorPanel({ runtime }: PromptEditorPanelProps) {
     handleAppendSubmit,
     isAnyTaskRunning,
     onNext,
+    promptVisibility,
   } = runtime
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
+      {promptVisibility && (
+        <PromptContextSummary
+          data={{
+            globalAssetText: promptVisibility.globalAssetText,
+            projectPrompt: promptVisibility.projectPrompt,
+            artStyleLabel: promptVisibility.artStyleLabel,
+            artStylePrompt: promptVisibility.artStylePrompt,
+            imagePromptSupplement: promptVisibility.imagePromptSupplement,
+            videoPromptSupplement: promptVisibility.videoPromptSupplement,
+          }}
+          showVideo
+          className="w-full max-w-4xl px-2"
+        />
+      )}
+
       {onAppendContent && (
         <div className="mt-8 p-6 bg-[var(--glass-bg-muted)] rounded-lg border-2 border-dashed border-[var(--glass-stroke-strong)]">
           <h3 className="text-lg font-semibold text-[var(--glass-text-primary)] mb-3">{tStoryboard('prompts.appendTitle')}</h3>
@@ -60,6 +77,6 @@ export default function PromptEditorPanel({ runtime }: PromptEditorPanelProps) {
           {tNovelPromotion('buttons.enterVideoGeneration')}
         </button>
       </div>
-    </>
+    </div>
   )
 }

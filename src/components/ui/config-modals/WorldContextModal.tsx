@@ -9,16 +9,42 @@ interface WorldContextModalProps {
   onClose: () => void
   text: string
   onChange: (value: string) => void
+  projectPrompt?: string
+  imagePrompt?: string
+  videoPrompt?: string
+  stylePrompt?: string
+  onProjectPromptChange?: (value: string) => void
+  onImagePromptChange?: (value: string) => void
+  onVideoPromptChange?: (value: string) => void
+  onStylePromptChange?: (value: string) => void
 }
 
-export function WorldContextModal({ isOpen, onClose, text, onChange }: WorldContextModalProps) {
+export function WorldContextModal({
+  isOpen,
+  onClose,
+  text,
+  onChange,
+  projectPrompt = '',
+  imagePrompt = '',
+  videoPrompt = '',
+  stylePrompt = '',
+  onProjectPromptChange,
+  onImagePromptChange,
+  onVideoPromptChange,
+  onStylePromptChange,
+}: WorldContextModalProps) {
   const t = useTranslations('worldContextModal')
   const tc = useTranslations('common')
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle')
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const handleTextChange = (value: string) => {
-    onChange(value)
+  const handleTextChange = (value: string, field: 'text' | 'project' | 'image' | 'video' | 'style' = 'text') => {
+    if (field === 'text') onChange(value)
+    else if (field === 'project') onProjectPromptChange?.(value)
+    else if (field === 'image') onImagePromptChange?.(value)
+    else if (field === 'video') onVideoPromptChange?.(value)
+    else if (field === 'style') onStylePromptChange?.(value)
+
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
@@ -89,13 +115,68 @@ export function WorldContextModal({ isOpen, onClose, text, onChange }: WorldCont
           </div>
         </div>
 
-        <div className="flex-1 glass-surface-soft p-4 overflow-hidden flex flex-col">
-          <textarea
-            value={text}
-            onChange={(event) => handleTextChange(event.target.value)}
-            placeholder={t('placeholder')}
-            className="glass-textarea-base flex-1 text-base resize-none leading-relaxed placeholder:text-[var(--glass-text-tertiary)]/70 custom-scrollbar p-4"
-          />
+        <div className="flex-1 overflow-y-auto space-y-6 custom-scrollbar pr-2">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 mb-2">
+              <AppIcon name="settingsHexAlt" className="w-4 h-4 text-[var(--glass-text-secondary)]" />
+              <span className="text-sm font-semibold text-[var(--glass-text-secondary)]">{t('title')}</span>
+            </div>
+            <div className="glass-surface-soft p-4 min-h-[200px] flex flex-col">
+              <textarea
+                value={text}
+                onChange={(event) => handleTextChange(event.target.value, 'text')}
+                placeholder={t('placeholder')}
+                className="glass-textarea-base flex-1 text-base resize-none leading-relaxed placeholder:text-[var(--glass-text-tertiary)]/70 custom-scrollbar p-2"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <AppIcon name="menu" className="w-4 h-4 text-[var(--glass-text-secondary)]" />
+              <span className="text-sm font-semibold text-[var(--glass-text-secondary)]">{t('promptSettingsTitle')}</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs font-medium text-[var(--glass-text-secondary)]">{t('projectPromptTitle')}</label>
+                <textarea
+                  value={projectPrompt}
+                  onChange={(e) => handleTextChange(e.target.value, 'project')}
+                  placeholder={t('projectPromptPlaceholder')}
+                  className="glass-textarea-base h-24 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-[var(--glass-text-secondary)]">{t('imagePromptTitle')}</label>
+                <textarea
+                  value={imagePrompt}
+                  onChange={(e) => handleTextChange(e.target.value, 'image')}
+                  placeholder={t('imagePromptPlaceholder')}
+                  className="glass-textarea-base h-24 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-[var(--glass-text-secondary)]">{t('videoPromptTitle')}</label>
+                <textarea
+                  value={videoPrompt}
+                  onChange={(e) => handleTextChange(e.target.value, 'video')}
+                  placeholder={t('videoPromptPlaceholder')}
+                  className="glass-textarea-base h-24 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-[var(--glass-text-secondary)]">{t('stylePromptTitle')}</label>
+              <textarea
+                value={stylePrompt}
+                onChange={(e) => handleTextChange(e.target.value, 'style')}
+                placeholder={t('stylePromptPlaceholder')}
+                className="glass-textarea-base h-24 text-sm"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="mt-6 pt-0 flex justify-start items-center flex-shrink-0">

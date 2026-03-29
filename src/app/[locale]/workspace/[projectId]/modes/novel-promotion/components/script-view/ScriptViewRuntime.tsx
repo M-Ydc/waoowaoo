@@ -58,6 +58,14 @@ interface ScriptViewProps {
   isSubmittingStoryboardBuild?: boolean
   assetsLoading?: boolean
   onOpenAssetLibrary?: () => void
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyleLabel: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 function toTranslationValues(values?: Record<string, unknown>) {
@@ -74,6 +82,7 @@ export default function ScriptView({
   isSubmittingStoryboardBuild = false,
   assetsLoading = false,
   onOpenAssetLibrary,
+  promptVisibility,
 }: ScriptViewProps) {
   const t = useTranslations('smartImport')
   const tAssets = useTranslations('assets')
@@ -452,6 +461,7 @@ export default function ScriptView({
         tAssets={(key, values) => tAssets(key, toTranslationValues(values))}
         tNP={(key, values) => tNP(key, toTranslationValues(values))}
         tCommon={(key, values) => tCommon(key, toTranslationValues(values))}
+        promptVisibility={promptVisibility}
       />
     </div>
   )

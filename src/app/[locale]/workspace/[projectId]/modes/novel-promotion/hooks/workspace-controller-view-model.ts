@@ -19,6 +19,7 @@ interface ProjectSnapshotInput {
   projectCharacters: unknown[]
   projectLocations: unknown[]
   globalAssetText: string
+  projectPrompt: string
   novelText: string
   analysisModel: string | undefined
   characterModel: string | undefined
@@ -31,6 +32,20 @@ interface ProjectSnapshotInput {
   capabilityOverrides: CapabilitySelections
   ttsRate: string | number | undefined
   artStyle: string | undefined
+  artStylePrompt: string
+  imagePromptSupplement: string
+  videoPromptSupplement: string
+  promptVisibility: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyle: string
+    artStyleLabel: string
+    defaultArtStylePromptZh: string
+    defaultArtStylePromptEn: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
 }
 
 interface BuildWorkspaceControllerViewModelParams {

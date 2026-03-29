@@ -18,7 +18,7 @@ export interface SaveModelTemplateInput {
   providerId: string
   modelId: string
   name: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'audio'
   template: OpenAICompatMediaTemplate
   source: 'ai' | 'manual'
 }

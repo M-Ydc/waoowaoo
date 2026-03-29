@@ -425,6 +425,9 @@ export function normalizeResponseJson(rawText: string): unknown {
 export function buildTemplateVariables(input: {
   model: string
   prompt: string
+  text?: string
+  voice?: string
+  rate?: number
   image?: string
   images?: string[]
   aspectRatio?: string
@@ -437,6 +440,9 @@ export function buildTemplateVariables(input: {
   const variables: TemplateVariableMap = {
     model: input.model,
     prompt: input.prompt,
+    text: input.text ?? input.prompt,
+    voice: input.voice || '',
+    rate: input.rate ?? null,
     image: input.image || '',
     images: input.images || [],
     aspect_ratio: input.aspectRatio || '',

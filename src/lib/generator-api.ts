@@ -12,6 +12,8 @@ import { createAudioGenerator, createImageGenerator, createVideoGenerator } from
 import type { GenerateResult } from './generators/base'
 import { getProviderConfig, getProviderKey, resolveModelSelection } from './api-config'
 import {
+    generateAudioViaOpenAICompat,
+    generateAudioViaOpenAICompatTemplate,
     generateImageViaOpenAICompat,
     generateImageViaOpenAICompatTemplate,
     generateVideoViaOpenAICompat,
@@ -296,6 +298,7 @@ export async function generateAudio(
 ): Promise<GenerateResult> {
     const selection = await resolveModelSelection(userId, modelKey, 'audio')
     const providerKey = getProviderKey(selection.provider).toLowerCase()
+    const providerConfig = await getProviderConfig(userId, selection.provider)
     if (providerKey === 'bailian') {
         return await generateBailianAudio({
             userId,
@@ -320,6 +323,48 @@ export async function generateAudio(
                 modelId: selection.modelId,
                 modelKey: selection.modelKey,
             },
+        })
+    }
+    const defaultGatewayRoute = resolveModelGatewayRoute(selection.provider)
+    const gatewayRoute = OFFICIAL_ONLY_PROVIDER_KEYS.has(providerKey)
+        ? 'official'
+        : (providerConfig.gatewayRoute || defaultGatewayRoute)
+
+    if (gatewayRoute === 'openai-compat') {
+        const compatTemplate = selection.compatMediaTemplate
+        if (compatTemplate) {
+            return await generateAudioViaOpenAICompatTemplate({
+                userId,
+                providerId: selection.provider,
+                modelId: selection.modelId,
+                modelKey: selection.modelKey,
+                text,
+                voice: options?.voice,
+                rate: options?.rate,
+                options: {
+                    provider: selection.provider,
+                    modelId: selection.modelId,
+                    modelKey: selection.modelKey,
+                },
+                profile: 'openai-compatible',
+                template: compatTemplate,
+            })
+        }
+
+        return await generateAudioViaOpenAICompat({
+            userId,
+            providerId: selection.provider,
+            modelId: selection.modelId,
+            modelKey: selection.modelKey,
+            text,
+            voice: options?.voice,
+            rate: options?.rate,
+            options: {
+                provider: selection.provider,
+                modelId: selection.modelId,
+                modelKey: selection.modelKey,
+            },
+            profile: 'openai-compatible',
         })
     }
     const generator = createAudioGenerator(selection.provider)

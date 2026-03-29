@@ -6,6 +6,7 @@ import { normalizeToBase64ForGeneration } from '@/lib/media/outbound-image'
 import { extractStorageKey, getSignedUrl, toFetchableUrl, uploadObject } from '@/lib/storage'
 import { resolveStorageKeyFromMediaValue } from '@/lib/media/service'
 import { synthesizeWithBailianTTS } from '@/lib/providers/bailian'
+import { generateAudio } from '@/lib/generator-api'
 import {
   parseSpeakerVoiceMap,
   resolveVoiceBindingForProvider,
@@ -214,8 +215,9 @@ export async function generateVoiceLine(params: {
 
   const audioSelection = await resolveModelSelectionOrSingle(params.userId, params.audioModel, 'audio')
   const providerKey = getProviderKey(audioSelection.provider).toLowerCase()
+  const bindingProviderKey = providerKey === 'openai-compatible' ? 'bailian' : providerKey
   const voiceBinding = resolveVoiceBindingForProvider({
-    providerKey,
+    providerKey: bindingProviderKey,
     character,
     speakerVoice,
   })
@@ -260,6 +262,27 @@ export async function generateVoiceLine(params: {
     generated = {
       audioData,
       audioDuration: result.audioDuration ?? getWavDurationFromBuffer(audioData),
+    }
+  } else if (providerKey === 'openai-compatible') {
+    if (!voiceBinding || voiceBinding.provider !== 'bailian') {
+      throw new Error('请先为该发言人绑定音色')
+    }
+    const result = await generateAudio(
+      params.userId,
+      audioSelection.modelKey,
+      text,
+      {
+        voice: voiceBinding.voiceId,
+        rate: 1,
+      },
+    )
+    if (!result.success || !result.audioUrl) {
+      throw new Error(result.error || 'OPENAI_COMPAT_AUDIO_GENERATION_FAILED')
+    }
+    const audioData = await downloadAudioData(result.audioUrl)
+    generated = {
+      audioData,
+      audioDuration: getWavDurationFromBuffer(audioData),
     }
   } else {
     throw new Error(`AUDIO_PROVIDER_UNSUPPORTED: ${audioSelection.provider}`)

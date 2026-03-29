@@ -1,6 +1,8 @@
 export { generateImageViaOpenAICompat } from './image'
 export { generateVideoViaOpenAICompat } from './video'
+export { generateAudioViaOpenAICompat } from './audio'
 export { generateImageViaOpenAICompatTemplate } from './template-image'
 export { generateVideoViaOpenAICompatTemplate } from './template-video'
+export { generateAudioViaOpenAICompatTemplate } from './template-audio'
 export { runOpenAICompatChatCompletion, runOpenAICompatChatCompletionStream } from './chat'
 export { runOpenAICompatResponsesCompletion } from './responses'

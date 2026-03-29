@@ -6,6 +6,8 @@ export type OpenAICompatImageProfile = CompatibleProviderKey
 
 export type OpenAICompatVideoProfile = 'openai-compatible'
 
+export type OpenAICompatAudioProfile = 'openai-compatible'
+
 export interface OpenAICompatClientConfig {
   providerId: string
   baseUrl: string
@@ -32,6 +34,19 @@ export interface OpenAICompatVideoRequest {
   prompt: string
   options?: Record<string, unknown>
   profile: OpenAICompatVideoProfile
+  template?: import('@/lib/openai-compat-media-template').OpenAICompatMediaTemplate
+  modelKey?: string
+}
+
+export interface OpenAICompatAudioRequest {
+  userId: string
+  providerId: string
+  modelId?: string
+  text: string
+  voice?: string
+  rate?: number
+  options?: Record<string, unknown>
+  profile: OpenAICompatAudioProfile
   template?: import('@/lib/openai-compat-media-template').OpenAICompatMediaTemplate
   modelKey?: string
 }

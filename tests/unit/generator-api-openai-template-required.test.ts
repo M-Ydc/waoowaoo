@@ -20,8 +20,10 @@ const getProviderConfigMock = vi.hoisted(() =>
 const resolveModelGatewayRouteMock = vi.hoisted(() => vi.fn(() => 'openai-compat'))
 const generateImageViaOpenAICompatMock = vi.hoisted(() => vi.fn(async () => ({ success: true, imageUrl: 'image' })))
 const generateVideoViaOpenAICompatMock = vi.hoisted(() => vi.fn(async () => ({ success: true, videoUrl: 'video' })))
+const generateAudioViaOpenAICompatMock = vi.hoisted(() => vi.fn(async () => ({ success: true, audioUrl: 'audio' })))
 const generateImageViaOpenAICompatTemplateMock = vi.hoisted(() => vi.fn(async () => ({ success: true, imageUrl: 'image' })))
 const generateVideoViaOpenAICompatTemplateMock = vi.hoisted(() => vi.fn(async () => ({ success: true, videoUrl: 'video' })))
+const generateAudioViaOpenAICompatTemplateMock = vi.hoisted(() => vi.fn(async () => ({ success: true, audioUrl: 'audio' })))
 
 vi.mock('@/lib/api-config', () => ({
   resolveModelSelection: resolveModelSelectionMock,
@@ -33,8 +35,10 @@ vi.mock('@/lib/model-gateway', () => ({
   resolveModelGatewayRoute: resolveModelGatewayRouteMock,
   generateImageViaOpenAICompat: generateImageViaOpenAICompatMock,
   generateVideoViaOpenAICompat: generateVideoViaOpenAICompatMock,
+  generateAudioViaOpenAICompat: generateAudioViaOpenAICompatMock,
   generateImageViaOpenAICompatTemplate: generateImageViaOpenAICompatTemplateMock,
   generateVideoViaOpenAICompatTemplate: generateVideoViaOpenAICompatTemplateMock,
+  generateAudioViaOpenAICompatTemplate: generateAudioViaOpenAICompatTemplateMock,
 }))
 
 vi.mock('@/lib/generators/factory', () => ({
@@ -55,7 +59,7 @@ vi.mock('@/lib/providers/siliconflow', () => ({
   generateSiliconFlowAudio: vi.fn(),
 }))
 
-import { generateImage, generateVideo } from '@/lib/generator-api'
+import { generateAudio, generateImage, generateVideo } from '@/lib/generator-api'
 
 describe('generator-api requires compat media template for openai-compatible media', () => {
   beforeEach(() => {
@@ -101,5 +105,27 @@ describe('generator-api requires compat media template for openai-compatible med
 
     expect(generateVideoViaOpenAICompatMock).not.toHaveBeenCalled()
     expect(generateVideoViaOpenAICompatTemplateMock).not.toHaveBeenCalled()
+  })
+
+  it('uses direct openai-compatible audio path without requiring template', async () => {
+    resolveModelSelectionMock.mockResolvedValueOnce({
+      provider: 'openai-compatible:oa-1',
+      modelId: 'gpt-4o-mini-tts',
+      modelKey: 'openai-compatible:oa-1::gpt-4o-mini-tts',
+      mediaType: 'audio',
+      compatMediaTemplate: undefined,
+    })
+
+    await expect(
+      generateAudio('user-1', 'openai-compatible:oa-1::gpt-4o-mini-tts', 'hello world', { voice: 'alloy' }),
+    ).resolves.toEqual({ success: true, audioUrl: 'audio' })
+
+    expect(generateAudioViaOpenAICompatMock).toHaveBeenCalledWith(expect.objectContaining({
+      providerId: 'openai-compatible:oa-1',
+      modelId: 'gpt-4o-mini-tts',
+      text: 'hello world',
+      voice: 'alloy',
+    }))
+    expect(generateAudioViaOpenAICompatTemplateMock).not.toHaveBeenCalled()
   })
 })

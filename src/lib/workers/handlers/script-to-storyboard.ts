@@ -38,6 +38,7 @@ import {
   parseStoryboardRetryTarget,
   runScriptToStoryboardAtomicRetry,
 } from './script-to-storyboard-atomic-retry'
+import { appendProjectPromptContextForProject, getResolvedPromptTemplate } from '@/lib/prompt-i18n/runtime-overrides'
 
 type AnyObj = Record<string, unknown>
 const MAX_VOICE_ANALYZE_ATTEMPTS = 2
@@ -150,10 +151,18 @@ export async function handleScriptToStoryboardTask(job: Job<TaskJobData>) {
   const reasoningEffort = requestedReasoningEffort
     || (isReasoningEffort(capabilityReasoningEffort) ? capabilityReasoningEffort : 'high')
 
-  const phase1PlanTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_STORYBOARD_PLAN, job.data.locale)
-  const phase2CinematographyTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_CINEMATOGRAPHER, job.data.locale)
-  const phase2ActingTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_ACTING_DIRECTION, job.data.locale)
-  const phase3DetailTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_STORYBOARD_DETAIL, job.data.locale)
+  const [phase1PlanTemplateRaw, phase2CinematographyTemplateRaw, phase2ActingTemplateRaw, phase3DetailTemplateRaw] = await Promise.all([
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_STORYBOARD_PLAN, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_CINEMATOGRAPHER, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_ACTING_DIRECTION, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_STORYBOARD_DETAIL, locale: job.data.locale }),
+  ])
+  const [phase1PlanTemplate, phase2CinematographyTemplate, phase2ActingTemplate, phase3DetailTemplate] = await Promise.all([
+    appendProjectPromptContextForProject({ projectId, basePrompt: phase1PlanTemplateRaw, stage: 'storyboard' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: phase2CinematographyTemplateRaw, stage: 'storyboard' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: phase2ActingTemplateRaw, stage: 'storyboard' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: phase3DetailTemplateRaw, stage: 'storyboard' }),
+  ])
   const payloadMeta = typeof payload.meta === 'object' && payload.meta !== null
     ? (payload.meta as AnyObj)
     : {}

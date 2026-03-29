@@ -139,7 +139,7 @@ async function failOrphanedTask(
                 message: errorMessage,
                 compensationFailed,
             },
-            persist: false,
+            persist: true,
         })
     }
 
@@ -249,7 +249,7 @@ export function startTaskWatchdog() {
                         errorCode: task.errorCode,
                         compensationFailed: task.errorCode === 'BILLING_COMPENSATION_FAILED',
                     },
-                    persist: false,
+                    persist: true,
                 })
             }
 

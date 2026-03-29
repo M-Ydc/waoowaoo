@@ -246,6 +246,7 @@ export interface NovelPromotionProject {
   projectId: string
   stage: string
   globalAssetText: string | null
+  projectPrompt?: string | null
   novelText: string | null
   analysisModel: string
   imageModel: string
@@ -261,6 +262,19 @@ export interface NovelPromotionProject {
   workflowMode: WorkflowMode  // 新增：工作流模式
   artStyle: string
   artStylePrompt: string | null
+  imagePromptSupplement?: string | null
+  videoPromptSupplement?: string | null
+  promptVisibility?: {
+    globalAssetText: string
+    projectPrompt: string
+    artStyle: string
+    artStyleLabel: string
+    defaultArtStylePromptZh: string
+    defaultArtStylePromptEn: string
+    artStylePrompt: string
+    imagePromptSupplement: string
+    videoPromptSupplement: string
+  }
   audioUrl: string | null
   media?: MediaRef | null
   srtContent: string | null

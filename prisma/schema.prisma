@@ -252,8 +252,11 @@ model NovelPromotionProject {
   videoRatio      String                    @default("9:16")
   ttsRate         String                    @default("+50%")
   globalAssetText String?                   @db.Text
+  projectPrompt   String?                   @db.Text
   artStyle        String                    @default("american-comic")
   artStylePrompt  String?                   @db.Text
+  imagePromptSupplement String?             @db.Text
+  videoPromptSupplement String?             @db.Text
   characterModel  String? // 用户配置的角色图片模型
   locationModel   String? // 用户配置的场景图片模型
   storyboardModel String? // 用户配置的分镜图片模型
@@ -451,6 +454,7 @@ model UserPreference {
   updatedAt       DateTime @default(now()) @updatedAt
   imageResolution String   @default("2K")
   capabilityDefaults String? @db.Text
+  systemPromptOverrides String? @db.Text
 
   // API Key 配置（极简版）
   llmBaseUrl  String? @default("https://openrouter.ai/api/v1")

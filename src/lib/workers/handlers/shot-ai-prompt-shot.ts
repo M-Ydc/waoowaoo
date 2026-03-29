@@ -10,7 +10,8 @@ import {
   readText,
   type AnyObj,
 } from './shot-ai-prompt-utils'
-import { buildPrompt, PROMPT_IDS } from '@/lib/prompt-i18n'
+import { PROMPT_IDS } from '@/lib/prompt-i18n'
+import { buildPromptWithOverrides } from '@/lib/prompt-i18n/runtime-overrides'
 
 export async function handleModifyShotPromptTask(job: Job<TaskJobData>, payload: AnyObj) {
   const currentPrompt = readRequiredString(payload.currentPrompt, 'currentPrompt')
@@ -33,7 +34,10 @@ export async function handleModifyShotPromptTask(job: Job<TaskJobData>, payload:
   const userInput = assetDescriptions
     ? `${modifyInstruction}\n\n引用的资产描述：${assetDescriptions}`
     : modifyInstruction
-  const finalPrompt = buildPrompt({
+  const finalPrompt = await buildPromptWithOverrides({
+    userId: job.data.userId,
+    projectId: job.data.projectId,
+    stage: 'image',
     promptId: PROMPT_IDS.NP_IMAGE_PROMPT_MODIFY,
     locale: job.data.locale,
     variables: {

@@ -20,7 +20,8 @@ import {
   pickFirstString,
   resolveNovelData,
 } from './image-task-handler-shared'
-import { buildPrompt, PROMPT_IDS } from '@/lib/prompt-i18n'
+import { PROMPT_IDS } from '@/lib/prompt-i18n'
+import { buildPromptWithOverrides } from '@/lib/prompt-i18n/runtime-overrides'
 
 function parseJsonUnknown(raw: string | null | undefined): unknown | null {
   if (!raw) return null
@@ -131,14 +132,19 @@ function buildPanelPromptContext(params: {
   }
 }
 
-function buildPanelPrompt(params: {
+async function buildPanelPrompt(params: {
+  userId: string
+  projectId: string
   locale: TaskJobData['locale']
   aspectRatio: string
   styleText: string
   sourceText: string
   contextJson: string
 }) {
-  return buildPrompt({
+  return await buildPromptWithOverrides({
+    userId: params.userId,
+    projectId: params.projectId,
+    stage: 'image',
     promptId: PROMPT_IDS.NP_SINGLE_PANEL_IMAGE,
     locale: params.locale,
     variables: {
@@ -213,7 +219,9 @@ export async function handlePanelImageTask(job: Job<TaskJobData>) {
     projectData,
   })
   const contextJson = JSON.stringify(promptContext, null, 2)
-  const prompt = buildPanelPrompt({
+  const prompt = await buildPanelPrompt({
+    userId: job.data.userId,
+    projectId: job.data.projectId,
     locale: job.data.locale,
     aspectRatio,
     styleText: artStyle || '与参考图风格一致',

@@ -362,7 +362,7 @@ export async function submitTask(params: {
           compensationFailed,
           errorCode: failedCode,
         },
-        persist: false,
+        persist: true,
       })
       logger.error({
         action: 'task.submit.enqueue_failed',

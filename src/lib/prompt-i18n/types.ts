@@ -15,3 +15,9 @@ export type BuildPromptInput = {
   locale: PromptLocale
   variables?: PromptVariables
 }
+
+export type RenderPromptTemplateInput = {
+  promptId: PromptId
+  template: string
+  variables?: PromptVariables
+}

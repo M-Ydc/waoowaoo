@@ -36,14 +36,14 @@ export interface AssistantToolResult {
   draftModel?: {
     modelId: string
     name: string
-    type: 'image' | 'video'
+    type: 'image' | 'video' | 'audio'
     provider: string
     compatMediaTemplate: OpenAICompatMediaTemplate
   }
   draftModels?: Array<{
     modelId: string
     name: string
-    type: 'image' | 'video'
+    type: 'image' | 'video' | 'audio'
     provider: string
     compatMediaTemplate: OpenAICompatMediaTemplate
   }>
@@ -51,7 +51,7 @@ export interface AssistantToolResult {
 
 export interface AssistantSkillDefinition {
   id: AssistantId
-  systemPrompt: (ctx: AssistantRuntimeContext) => string
+  systemPrompt: (ctx: AssistantRuntimeContext) => string | Promise<string>
   tools?: (ctx: AssistantRuntimeContext) => ToolSet
   temperature?: number
   maxSteps?: number

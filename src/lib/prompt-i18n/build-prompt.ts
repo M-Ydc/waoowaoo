@@ -1,7 +1,7 @@
 import { PROMPT_CATALOG } from './catalog'
 import { PromptI18nError } from './errors'
 import { getPromptTemplate } from './template-store'
-import type { BuildPromptInput } from './types'
+import type { BuildPromptInput, RenderPromptTemplateInput } from './types'
 
 const SINGLE_PLACEHOLDER_PATTERN = /\{([A-Za-z0-9_]+)\}/g
 const DOUBLE_PLACEHOLDER_PATTERN = /\{\{([A-Za-z0-9_]+)\}\}/g
@@ -31,8 +31,8 @@ function replaceAllPlaceholders(template: string, key: string, value: string): s
   return template.replace(pattern, value)
 }
 
-export function buildPrompt(input: BuildPromptInput): string {
-  const { promptId, locale, variables = {} } = input
+export function renderPromptTemplate(input: RenderPromptTemplateInput): string {
+  const { promptId, template, variables = {} } = input
   const entry = PROMPT_CATALOG[promptId]
   if (!entry) {
     throw new PromptI18nError(
@@ -41,9 +41,6 @@ export function buildPrompt(input: BuildPromptInput): string {
       `Prompt is not registered: ${promptId}`,
     )
   }
-
-  const template = getPromptTemplate(promptId, locale)
-
   const templatePlaceholders = extractPlaceholders(template)
   const defined = new Set(entry.variableKeys)
 
@@ -95,4 +92,10 @@ export function buildPrompt(input: BuildPromptInput): string {
   }
 
   return rendered
+}
+
+export function buildPrompt(input: BuildPromptInput): string {
+  const { promptId, locale, variables = {} } = input
+  const template = getPromptTemplate(promptId, locale)
+  return renderPromptTemplate({ promptId, template, variables })
 }

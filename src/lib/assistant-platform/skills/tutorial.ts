@@ -1,8 +1,11 @@
 import type { AssistantRuntimeContext, AssistantSkillDefinition } from '../types'
-import { renderAssistantSystemPrompt } from '../system-prompts'
+import { renderAssistantSystemPromptForUser } from '../system-prompts'
 
-function buildTutorialPrompt(_ctx: AssistantRuntimeContext): string {
-  return renderAssistantSystemPrompt('tutorial')
+async function buildTutorialPrompt(ctx: AssistantRuntimeContext): Promise<string> {
+  return await renderAssistantSystemPromptForUser({
+    userId: ctx.userId,
+    promptId: 'tutorial',
+  })
 }
 
 export const tutorialSkill: AssistantSkillDefinition = {

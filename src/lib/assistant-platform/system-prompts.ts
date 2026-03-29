@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { renderAssistantSystemPromptWithOverrides } from '@/lib/prompt-i18n/runtime-overrides'
 
 export type AssistantPromptId = 'api-config-template' | 'tutorial'
 
@@ -43,4 +44,17 @@ export function renderAssistantSystemPrompt(
   const template = loadPromptTemplate(promptId)
   if (!vars || Object.keys(vars).length === 0) return template
   return replacePromptVariables(template, vars)
+}
+
+export async function renderAssistantSystemPromptForUser(input: {
+  userId?: string | null
+  promptId: AssistantPromptId
+  vars?: Record<string, string>
+}): Promise<string> {
+  const rendered = renderAssistantSystemPrompt(input.promptId, input.vars)
+  return await renderAssistantSystemPromptWithOverrides({
+    userId: input.userId,
+    promptId: input.promptId,
+    basePrompt: rendered,
+  })
 }

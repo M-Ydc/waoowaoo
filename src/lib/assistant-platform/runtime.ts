@@ -111,10 +111,11 @@ export async function createAssistantChatResponse(input: {
   }
 
   const tools = skill.tools ? skill.tools(runtimeContext) : undefined
+  const systemPrompt = await skill.systemPrompt(runtimeContext)
 
   const result = streamText({
     model: resolved.languageModel,
-    system: skill.systemPrompt(runtimeContext),
+    system: systemPrompt,
     messages: await toModelMessages(normalizedMessages),
     ...(tools ? { tools } : {}),
     stopWhen: stepCountIs(skill.maxSteps ?? 4),

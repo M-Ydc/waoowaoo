@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { requireUserAuth, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
 import { attachMediaFieldsToProject } from '@/lib/media/attach'
+import { buildProjectPromptVisibility } from '@/lib/prompt-i18n/prompt-visibility'
 
 function readAssetKind(value: Record<string, unknown>): string {
   return typeof value.assetKind === 'string' ? value.assetKind : 'location'
@@ -79,6 +80,14 @@ export const GET = apiHandler(async (
     ...novelPromotionDataWithSignedUrls,
     locations: (novelPromotionDataWithSignedUrls.locations || []).filter((item) => readAssetKind(item) !== 'prop'),
     props: (novelPromotionDataWithSignedUrls.locations || []).filter((item) => readAssetKind(item) === 'prop'),
+    promptVisibility: buildProjectPromptVisibility({
+      globalAssetText: novelPromotionDataWithSignedUrls.globalAssetText,
+      projectPrompt: novelPromotionDataWithSignedUrls.projectPrompt,
+      artStyle: novelPromotionDataWithSignedUrls.artStyle,
+      artStylePrompt: novelPromotionDataWithSignedUrls.artStylePrompt,
+      imagePromptSupplement: novelPromotionDataWithSignedUrls.imagePromptSupplement,
+      videoPromptSupplement: novelPromotionDataWithSignedUrls.videoPromptSupplement,
+    }),
   }
 
   const fullProject = {

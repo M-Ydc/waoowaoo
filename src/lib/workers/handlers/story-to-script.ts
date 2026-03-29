@@ -34,6 +34,7 @@ import { resolveAnalysisModel } from './resolve-analysis-model'
 import { createArtifact, listArtifacts } from '@/lib/run-runtime/service'
 import { assertWorkflowRunActive, withWorkflowRunLease } from '@/lib/run-runtime/workflow-lease'
 import { parseScreenplayPayload } from './screenplay-convert-helpers'
+import { appendProjectPromptContextForProject, getResolvedPromptTemplate } from '@/lib/prompt-i18n/runtime-overrides'
 
 function readAssetKind(value: Record<string, unknown>): string {
   return typeof value.assetKind === 'string' ? value.assetKind : 'location'
@@ -135,11 +136,20 @@ export async function handleStoryToScriptTask(job: Job<TaskJobData>) {
   if (!mergedContent.trim()) {
     throw new Error('content is required')
   }
-  const characterPromptTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_CHARACTER_PROFILE, job.data.locale)
-  const locationPromptTemplate = getPromptTemplate(PROMPT_IDS.NP_SELECT_LOCATION, job.data.locale)
-  const propPromptTemplate = getPromptTemplate(PROMPT_IDS.NP_SELECT_PROP, job.data.locale)
-  const clipPromptTemplate = getPromptTemplate(PROMPT_IDS.NP_AGENT_CLIP, job.data.locale)
-  const screenplayPromptTemplate = getPromptTemplate(PROMPT_IDS.NP_SCREENPLAY_CONVERSION, job.data.locale)
+  const [characterPromptTemplateRaw, locationPromptTemplateRaw, propPromptTemplateRaw, clipPromptTemplateRaw, screenplayPromptTemplateRaw] = await Promise.all([
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_CHARACTER_PROFILE, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_SELECT_LOCATION, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_SELECT_PROP, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_AGENT_CLIP, locale: job.data.locale }),
+    getResolvedPromptTemplate({ userId: job.data.userId, promptId: PROMPT_IDS.NP_SCREENPLAY_CONVERSION, locale: job.data.locale }),
+  ])
+  const [characterPromptTemplate, locationPromptTemplate, propPromptTemplate, clipPromptTemplate, screenplayPromptTemplate] = await Promise.all([
+    appendProjectPromptContextForProject({ projectId, basePrompt: characterPromptTemplateRaw, stage: 'analysis' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: locationPromptTemplateRaw, stage: 'analysis' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: propPromptTemplateRaw, stage: 'analysis' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: clipPromptTemplateRaw, stage: 'analysis' }),
+    appendProjectPromptContextForProject({ projectId, basePrompt: screenplayPromptTemplateRaw, stage: 'storyboard' }),
+  ])
   const maxLength = 30000
   const content = mergedContent.length > maxLength ? mergedContent.slice(0, maxLength) : mergedContent
   const payloadMeta = typeof payload.meta === 'object' && payload.meta !== null

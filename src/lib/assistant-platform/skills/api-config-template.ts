@@ -6,12 +6,12 @@ import { saveModelTemplateConfiguration } from '@/lib/user-api/model-template/sa
 import { validateOpenAICompatMediaTemplate } from '@/lib/user-api/model-template/validator'
 import type { AssistantRuntimeContext, AssistantSkillDefinition, AssistantToolResult } from '../types'
 import { AssistantPlatformError } from '../errors'
-import { renderAssistantSystemPrompt } from '../system-prompts'
+import { renderAssistantSystemPromptForUser } from '../system-prompts'
 
 interface SaveModelTemplateToolInput {
   modelId: string
   name: string
-  type: 'image' | 'video'
+  type: 'image' | 'video' | 'audio'
   compatMediaTemplate: unknown
 }
 
@@ -25,7 +25,7 @@ const saveModelTemplateItemSchema: JSONSchema7 = {
   properties: {
     modelId: { type: 'string', minLength: 1 },
     name: { type: 'string', minLength: 1 },
-    type: { type: 'string', enum: ['image', 'video'] },
+    type: { type: 'string', enum: ['image', 'video', 'audio'] },
     compatMediaTemplate: { type: 'object' },
   },
   required: ['modelId', 'name', 'type', 'compatMediaTemplate'],
@@ -47,9 +47,13 @@ const saveModelTemplatesInputSchema = jsonSchema<SaveModelTemplatesToolInput>({
   required: ['models'],
 })
 
-function buildSystemPrompt(ctx: AssistantRuntimeContext): string {
-  return renderAssistantSystemPrompt('api-config-template', {
-    providerId: ctx.context.providerId || '',
+async function buildSystemPrompt(ctx: AssistantRuntimeContext): Promise<string> {
+  return await renderAssistantSystemPromptForUser({
+    userId: ctx.userId,
+    promptId: 'api-config-template',
+    vars: {
+      providerId: ctx.context.providerId || '',
+    },
   })
 }
 
@@ -66,13 +70,13 @@ function createApiConfigTemplateTools(ctx: AssistantRuntimeContext): ToolSet {
     saveModelTemplates: tool({
       description: '当用户一次要配置多个模型时调用，批量校验并保存到当前 provider。',
       inputSchema: saveModelTemplatesInputSchema,
-      execute: async (input): Promise<AssistantToolResult> => {
-        const normalizedItems: Array<{
-          modelId: string
-          name: string
-          type: 'image' | 'video'
-          template: OpenAICompatMediaTemplate
-        }> = []
+      execute: async (input: SaveModelTemplatesToolInput): Promise<AssistantToolResult> => {
+          const normalizedItems: Array<{
+            modelId: string
+            name: string
+            type: 'image' | 'video' | 'audio'
+            template: OpenAICompatMediaTemplate
+          }> = []
 
         for (let index = 0; index < input.models.length; index += 1) {
           const item = input.models[index]
@@ -176,7 +180,7 @@ function createApiConfigTemplateTools(ctx: AssistantRuntimeContext): ToolSet {
     saveModelTemplate: tool({
       description: '当模型模板字段完整且可执行时调用，自动保存到当前 provider。',
       inputSchema: saveModelTemplateInputSchema,
-      execute: async (input): Promise<AssistantToolResult> => {
+      execute: async (input: SaveModelTemplateToolInput): Promise<AssistantToolResult> => {
         const normalizedModelId = input.modelId.trim()
         const normalizedName = input.name.trim() || normalizedModelId
         if (!normalizedModelId) {

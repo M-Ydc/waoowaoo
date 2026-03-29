@@ -11,6 +11,7 @@ import type { TaskJobData } from '@/lib/task/types'
 import { buildPrompt, PROMPT_IDS } from '@/lib/prompt-i18n'
 import { resolveAnalysisModel } from './resolve-analysis-model'
 import { seedProjectLocationBackedImageSlots } from '@/lib/assets/services/location-backed-assets'
+import { buildPromptWithOverrides } from '@/lib/prompt-i18n/runtime-overrides'
 
 function readAssetKind(value: Record<string, unknown>): string {
   return typeof value.assetKind === 'string' ? value.assetKind : 'location'
@@ -102,7 +103,10 @@ export async function handleAnalyzeNovelTask(job: Job<TaskJobData>) {
     .filter((item) => readAssetKind(item as unknown as Record<string, unknown>) === 'prop')
     .map((item) => item.name)
     .join(', ')
-  const characterPromptTemplate = buildPrompt({
+  const characterPromptTemplate = await buildPromptWithOverrides({
+    userId: job.data.userId,
+    projectId,
+    stage: 'analysis',
     promptId: PROMPT_IDS.NP_AGENT_CHARACTER_PROFILE,
     locale: job.data.locale,
     variables: {
@@ -110,7 +114,10 @@ export async function handleAnalyzeNovelTask(job: Job<TaskJobData>) {
       characters_lib_info: charactersLibName || '无',
     },
   })
-  const locationPromptTemplate = buildPrompt({
+  const locationPromptTemplate = await buildPromptWithOverrides({
+    userId: job.data.userId,
+    projectId,
+    stage: 'analysis',
     promptId: PROMPT_IDS.NP_SELECT_LOCATION,
     locale: job.data.locale,
     variables: {
@@ -118,7 +125,10 @@ export async function handleAnalyzeNovelTask(job: Job<TaskJobData>) {
       locations_lib_name: locationsLibName || '无',
     },
   })
-  const propPromptTemplate = buildPrompt({
+  const propPromptTemplate = await buildPromptWithOverrides({
+    userId: job.data.userId,
+    projectId,
+    stage: 'analysis',
     promptId: PROMPT_IDS.NP_SELECT_PROP,
     locale: job.data.locale,
     variables: {

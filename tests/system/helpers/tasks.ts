@@ -18,6 +18,27 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+async function hasTerminalLifecycleEvent(taskId: string, status: TaskStatus) {
+  const expectedTerminal =
+    status === TASK_STATUS.COMPLETED
+      ? TASK_EVENT_TYPE.COMPLETED
+      : status === TASK_STATUS.FAILED
+        ? TASK_EVENT_TYPE.FAILED
+        : null
+
+  if (!expectedTerminal) return true
+
+  const event = await prisma.taskEvent.findFirst({
+    where: {
+      taskId,
+      eventType: expectedTerminal,
+    },
+    select: { eventType: true },
+  })
+
+  return Boolean(event)
+}
+
 export async function waitForTaskTerminalState(taskId: string, options: WaitTaskOptions = {}) {
   const timeoutMs = options.timeoutMs ?? 15_000
   const intervalMs = options.intervalMs ?? 100
@@ -28,7 +49,10 @@ export async function waitForTaskTerminalState(taskId: string, options: WaitTask
       where: { id: taskId },
     })
     if (task && TERMINAL_STATUSES.has(task.status as TaskStatus)) {
-      return task
+      const terminalEventReady = await hasTerminalLifecycleEvent(taskId, task.status as TaskStatus)
+      if (terminalEventReady) {
+        return task
+      }
     }
     await sleep(intervalMs)
   }

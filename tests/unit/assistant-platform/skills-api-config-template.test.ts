@@ -227,4 +227,48 @@ describe('assistant-platform api-config-template skill', () => {
       source: 'ai',
     }))
   })
+
+  it('saves audio templates when payload is valid', async () => {
+    const tools = apiConfigTemplateSkill.tools?.(buildRuntimeContext())
+    expect(tools).toBeTruthy()
+    const saveTool = tools?.saveModelTemplate
+    expect(saveTool).toBeTruthy()
+    if (!saveTool?.execute) {
+      throw new Error('saveModelTemplate.execute is required for test')
+    }
+
+    const result = await saveTool.execute({
+      modelId: 'gpt-4o-mini-tts',
+      name: 'GPT-4o Mini TTS',
+      type: 'audio',
+      compatMediaTemplate: {
+        version: 1,
+        mediaType: 'audio',
+        mode: 'sync',
+        create: {
+          method: 'POST',
+          path: '/audio/speech',
+          contentType: 'application/json',
+          bodyTemplate: {
+            model: '{{model}}',
+            input: '{{text}}',
+            voice: '{{voice}}',
+          },
+        },
+        response: {
+          outputUrlPath: '$.url',
+        },
+      },
+    }, {} as never)
+
+    expect(result.status).toBe('saved')
+    expect(saveModelTemplateConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
+      userId: 'user-1',
+      providerId: 'openai-compatible:oa-1',
+      modelId: 'gpt-4o-mini-tts',
+      name: 'GPT-4o Mini TTS',
+      type: 'audio',
+      source: 'ai',
+    }))
+  })
 })

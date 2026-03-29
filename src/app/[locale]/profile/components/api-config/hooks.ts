@@ -11,6 +11,7 @@ import {
     PRESET_MODELS,
     encodeModelKey,
     getProviderKey,
+    isCustomProviderInstance,
     isPresetComingSoonModelKey,
     resolvePresetProviderName,
     type PricingDisplayItem,
@@ -83,7 +84,7 @@ export function mergeProvidersForDisplay(
 
         const providerKey = getProviderKey(savedProvider.id)
         const matchedPreset = presetProviders.find((presetProvider) => presetProvider.id === providerKey)
-        if (matchedPreset) {
+        if (matchedPreset && !isCustomProviderInstance(savedProvider.id)) {
             const apiKey = savedProvider.apiKey || ''
             const providerBaseUrl = providerKey === 'minimax'
                 ? matchedPreset.baseUrl

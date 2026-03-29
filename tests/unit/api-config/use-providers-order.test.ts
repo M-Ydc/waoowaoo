@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mergeProvidersForDisplay } from '@/app/[locale]/profile/components/api-config/hooks'
-import type { Provider } from '@/app/[locale]/profile/components/api-config/types'
+import { getProviderDisplayName, type Provider } from '@/app/[locale]/profile/components/api-config/types'
 
 describe('useProviders provider order merge', () => {
   it('preserves saved providers order and appends missing presets at the end', () => {
@@ -61,5 +61,45 @@ describe('useProviders provider order merge', () => {
       apiKey: 'mm-key',
       hasApiKey: true,
     })
+  })
+
+  it('keeps custom provider instance name instead of replacing it with preset key label', () => {
+    const presetProviders: Provider[] = [
+      { id: 'openrouter', name: 'OpenRouter' },
+      { id: 'google', name: 'Google AI Studio' },
+    ]
+    const savedProviders: Provider[] = [
+      {
+        id: 'openai-compatible:oa-2',
+        name: 'Acme OpenAI Gateway',
+        baseUrl: 'https://oa-b.test',
+        apiKey: 'oa-key',
+      },
+      {
+        id: 'gemini-compatible:gm-2',
+        name: 'Acme Gemini Bridge',
+        baseUrl: 'https://gm-b.test',
+        apiKey: 'gm-key',
+      },
+    ]
+
+    const merged = mergeProvidersForDisplay(savedProviders, presetProviders)
+    expect(merged[0]).toMatchObject({
+      id: 'openai-compatible:oa-2',
+      name: 'Acme OpenAI Gateway',
+      baseUrl: 'https://oa-b.test',
+    })
+    expect(merged[1]).toMatchObject({
+      id: 'gemini-compatible:gm-2',
+      name: 'Acme Gemini Bridge',
+      baseUrl: 'https://gm-b.test',
+    })
+  })
+})
+
+describe('getProviderDisplayName', () => {
+  it('keeps custom provider instance id unresolved so caller can use saved instance name', () => {
+    expect(getProviderDisplayName('openai-compatible:oa-1', 'zh')).toBe('openai-compatible:oa-1')
+    expect(getProviderDisplayName('gemini-compatible:gm-1', 'en')).toBe('gemini-compatible:gm-1')
   })
 })

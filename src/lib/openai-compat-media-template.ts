@@ -29,6 +29,8 @@ export interface TemplateResponseMap {
   statusPath?: string
   outputUrlPath?: string
   outputUrlsPath?: string
+  outputBase64Path?: string
+  mimeTypePath?: string
   errorPath?: string
 }
 
@@ -41,7 +43,7 @@ export interface TemplatePollingConfig {
 
 export interface OpenAICompatMediaTemplate {
   version: 1
-  mediaType: 'image' | 'video'
+  mediaType: 'image' | 'video' | 'audio'
   mode: 'sync' | 'async'
   create: TemplateEndpoint
   status?: TemplateEndpoint
@@ -55,6 +57,10 @@ export type OpenAICompatMediaTemplateSource = 'ai' | 'manual'
 export const TEMPLATE_PLACEHOLDER_ALLOWLIST = new Set([
   'model',
   'prompt',
+  'text',
+  'voice',
+  'format',
+  'rate',
   'image',
   'images',
   'aspect_ratio',

@@ -178,7 +178,7 @@ export function ApiConfigTabContainer() {
   }, [newGeminiProvider, addProvider])
 
   const handleAddGeminiProvider = useCallback(async () => {
-    if (!newGeminiProvider.name || !newGeminiProvider.baseUrl) {
+    if (!newGeminiProvider.name.trim() || !newGeminiProvider.baseUrl.trim()) {
       alert(tp('fillRequired'))
       return
     }
@@ -383,19 +383,19 @@ export function ApiConfigTabContainer() {
             <label className="mb-1.5 block text-xs font-medium text-[var(--glass-text-primary)]">
               {tp('name')}
             </label>
-            <input
-              type="text"
-              value={newGeminiProvider.name}
-              onChange={(event) =>
-                setNewGeminiProvider({
-                  ...newGeminiProvider,
-                  name: event.target.value,
-                })
-              }
-              disabled={testStatus === 'testing'}
-              placeholder={tp('name')}
-              className="glass-input-base w-full px-3 py-2.5 text-sm"
-            />
+              <input
+                type="text"
+                value={newGeminiProvider.name}
+                onChange={(event) =>
+                  setNewGeminiProvider({
+                    ...newGeminiProvider,
+                    name: event.target.value,
+                  })
+                }
+                disabled={testStatus === 'testing'}
+                placeholder={newGeminiProvider.apiType === 'openai-compatible' ? 'My OpenAI-Compatible Provider' : 'My Gemini-Compatible Provider'}
+                className="glass-input-base w-full px-3 py-2.5 text-sm"
+              />
           </div>
 
           <div>

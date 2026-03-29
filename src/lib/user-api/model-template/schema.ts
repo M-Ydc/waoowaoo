@@ -216,6 +216,8 @@ function readResponseMap(
     'statusPath',
     'outputUrlPath',
     'outputUrlsPath',
+    'outputBase64Path',
+    'mimeTypePath',
     'errorPath',
   ]
 
@@ -427,11 +429,15 @@ function validateModeSpecificRequirements(
     return
   }
 
-  if (!template.response.outputUrlPath && !template.response.outputUrlsPath) {
+  if (
+    !template.response.outputUrlPath
+    && !template.response.outputUrlsPath
+    && !template.response.outputBase64Path
+  ) {
     issues.push({
       code: 'MODEL_TEMPLATE_UNMAPPABLE',
       field: 'response',
-      message: 'sync mode requires outputUrlPath or outputUrlsPath',
+      message: 'sync mode requires outputUrlPath, outputUrlsPath, or outputBase64Path',
     })
   }
 }
@@ -459,11 +465,11 @@ export function parseOpenAICompatMediaTemplate(raw: unknown): {
   }
 
   const mediaType = raw.mediaType
-  if (mediaType !== 'image' && mediaType !== 'video') {
+  if (mediaType !== 'image' && mediaType !== 'video' && mediaType !== 'audio') {
     issues.push({
       code: 'MODEL_TEMPLATE_INVALID',
       field: 'mediaType',
-      message: 'mediaType must be image or video',
+      message: 'mediaType must be image, video, or audio',
     })
   }
 
@@ -490,7 +496,7 @@ export function parseOpenAICompatMediaTemplate(raw: unknown): {
     ? undefined
     : readPollingConfig(raw.polling, 'polling', issues) || undefined
 
-  if (issues.length > 0 || !create || !response || (mode !== 'sync' && mode !== 'async') || (mediaType !== 'image' && mediaType !== 'video')) {
+  if (issues.length > 0 || !create || !response || (mode !== 'sync' && mode !== 'async') || (mediaType !== 'image' && mediaType !== 'video' && mediaType !== 'audio')) {
     return { template: null, issues }
   }
 

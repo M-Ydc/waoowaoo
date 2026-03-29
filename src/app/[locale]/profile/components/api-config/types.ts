@@ -233,6 +233,11 @@ export function getProviderKey(providerId?: string): string {
     return colonIndex === -1 ? providerId : providerId.slice(0, colonIndex)
 }
 
+export function isCustomProviderInstance(providerId?: string): boolean {
+    if (!providerId) return false
+    return providerId.includes(':')
+}
+
 /**
  * 获取厂商的友好显示名称
  * @param providerId - 厂商ID（如 'ark', 'google'）
@@ -240,6 +245,7 @@ export function getProviderKey(providerId?: string): string {
  */
 export function getProviderDisplayName(providerId?: string, locale?: string): string {
     if (!providerId) return ''
+    if (isCustomProviderInstance(providerId)) return providerId
     const providerKey = getProviderKey(providerId)
     const provider = PRESET_PROVIDERS.find(p => p.id === providerKey)
     if (!provider) return providerId

@@ -972,10 +972,10 @@ function isOpenAICompatibleLlmModel(model: StoredModel): boolean {
 
 function isOpenAICompatibleMediaTemplateModel(model: StoredModel): boolean {
   if (getProviderKey(model.provider) !== 'openai-compatible') return false
-  return model.type === 'image' || model.type === 'video'
+  return model.type === 'image' || model.type === 'video' || model.type === 'audio'
 }
 
-function getDefaultMediaTemplate(type: 'image' | 'video'): OpenAICompatMediaTemplate {
+function getDefaultMediaTemplate(type: 'image' | 'video' | 'audio'): OpenAICompatMediaTemplate {
   if (type === 'image') {
     return {
       version: 1,
@@ -1107,7 +1107,11 @@ function resolveStoredMediaTemplates(
       return model
     }
 
-    const expectedMediaType = model.type === 'image' ? 'image' : 'video'
+    const expectedMediaType = model.type === 'image'
+      ? 'image'
+      : model.type === 'video'
+        ? 'video'
+        : 'audio'
     if (model.compatMediaTemplate) {
       if (model.compatMediaTemplate.mediaType !== expectedMediaType) {
         throw new ApiError('INVALID_PARAMS', {
@@ -1130,6 +1134,10 @@ function resolveStoredMediaTemplates(
         compatMediaTemplateCheckedAt: existing.compatMediaTemplateCheckedAt || checkedAtFallback,
         compatMediaTemplateSource: existing.compatMediaTemplateSource || 'manual',
       }
+    }
+
+    if (model.type === 'audio') {
+      return model
     }
 
     return {

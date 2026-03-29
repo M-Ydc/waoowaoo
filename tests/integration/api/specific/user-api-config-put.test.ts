@@ -1295,4 +1295,66 @@ describe('api specific - user api-config PUT provider uniqueness', () => {
     })
     expect(savedModel?.compatMediaTemplateSource).toBe('ai')
   })
+
+  it('keeps explicit compatMediaTemplate for openai-compatible audio model', async () => {
+    installAuthMocks()
+    mockAuthenticated('user-1')
+    const route = await import('@/app/api/user/api-config/route')
+
+    const req = buildMockRequest({
+      path: '/api/user/api-config',
+      method: 'PUT',
+      body: {
+        providers: [
+          { id: 'openai-compatible:oa-1', name: 'OpenAI Compat', baseUrl: 'https://compat.test/v1', apiKey: 'oa-key' },
+        ],
+        models: [
+          {
+            modelId: 'gpt-4o-mini-tts',
+            modelKey: 'openai-compatible:oa-1::gpt-4o-mini-tts',
+            name: 'TTS Mini',
+            type: 'audio',
+            provider: 'openai-compatible:oa-1',
+            compatMediaTemplate: {
+              version: 1,
+              mediaType: 'audio',
+              mode: 'sync',
+              create: {
+                method: 'POST',
+                path: '/audio/speech',
+                contentType: 'application/json',
+                bodyTemplate: {
+                  model: '{{model}}',
+                  input: '{{text}}',
+                  voice: '{{voice}}',
+                  format: '{{format}}',
+                },
+              },
+              response: {
+                outputBase64Path: '$.audio',
+                mimeTypePath: '$.mime_type',
+              },
+            },
+            compatMediaTemplateSource: 'ai',
+          },
+        ],
+      },
+    })
+
+    const res = await route.PUT(req, routeContext)
+    expect(res.status).toBe(200)
+    const savedModels = readSavedModelsFromUpsert()
+    const savedModel = savedModels.find((item) => item.modelKey === 'openai-compatible:oa-1::gpt-4o-mini-tts')
+    expect(savedModel?.compatMediaTemplate).toMatchObject({
+      mediaType: 'audio',
+      mode: 'sync',
+      create: {
+        path: '/audio/speech',
+      },
+      response: {
+        outputBase64Path: '$.audio',
+      },
+    })
+    expect(savedModel?.compatMediaTemplateSource).toBe('ai')
+  })
 })

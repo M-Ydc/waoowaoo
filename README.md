@@ -122,7 +122,31 @@ npm run dev
 
 启动后进入**设置中心**配置 AI 服务的 API Key，内置配置教程。
 
-> 💡 **注意**：目前仅推荐使用各服务商官方 API，第三方兼容格式（OpenAI Compatible）尚不完善，后续版本会持续优化。
+### OpenAI Compatible 支持范围
+
+现在已支持通过 **OpenAI-compatible** 接口接入多种模型能力，覆盖前后端配置与运行链路：
+
+- **文本（LLM）**：支持 OpenAI-compatible 文本模型接入与协议探测
+- **图片（Image）**：支持通过 OpenAI-compatible provider 配置图片模型
+- **视频（Video）**：支持通过 OpenAI-compatible provider 配置视频模型
+- **音频（Audio / TTS）**：支持通过 OpenAI-compatible provider 配置音频模型，并接入项目内实际配音生成链路
+
+### 使用方式
+
+1. 进入 **设置中心**，新增或编辑一个 `OpenAI Compatible` provider
+2. 填写对应服务的 `Base URL` 与 `API Key`
+3. 按模型类型添加模型：
+   - 文本模型可直接配置并用于分析/对话等链路
+   - 图片、视频模型支持在前端配置为自定义模型
+   - 音频模型支持配置为自定义 TTS 模型，并用于项目中的配音生成
+
+### 模板说明
+
+- **文本模型**：走 OpenAI-compatible 文本协议探测与调用
+- **图片 / 视频模型**：支持通过兼容媒体模板（media template）映射不同厂商的 OpenAI-compatible 媒体接口
+- **音频模型**：默认支持标准 OpenAI 风格的 `/audio/speech` 语音合成接口；只有在目标服务的音频接口与标准返回格式不一致时，才需要额外配置兼容模板
+
+> 💡 **提示**：如果某个第三方服务声称兼容 OpenAI，但其图片、视频或音频接口字段与标准格式不同，请在设置中心为对应模型补充兼容模板；文本模型通常不需要这一步。
 
 ---
 

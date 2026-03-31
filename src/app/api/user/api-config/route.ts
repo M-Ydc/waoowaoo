@@ -1005,14 +1005,13 @@ function getDefaultMediaTemplate(type: 'image' | 'video' | 'audio'): OpenAICompa
     create: {
       method: 'POST',
       path: '/videos',
-      contentType: 'multipart/form-data',
-      multipartFileFields: ['input_reference'],
+      contentType: 'application/json',
       bodyTemplate: {
         model: '{{model}}',
         prompt: '{{prompt}}',
         seconds: '{{duration}}',
         size: '{{size}}',
-        input_reference: '{{image}}',
+        image_reference: [{ type: 'image_url', image_url: { url: '{{image}}' } }],
       },
     },
     status: {
